@@ -1,0 +1,9 @@
+Student ID,Student Name,Roll No,First Seen (s),Last Seen (s),Active Duration (s),Presence Ratio,Attendance Status
+STU-001,Aarav Sharma,21CS01,1.0,60.0,60.0,100.0%,PRESENT
+STU-002,Priya Patel,21CS02,1.0,60.0,60.0,100.0%,PRESENT
+STU-003,Rohan Verma,21CS03,1.0,60.0,60.0,100.0%,PRESENT
+STU-004,Ananya Iyer,21CS04,1.0,60.0,60.0,100.0%,PRESENT
+STU-005,Kabir Mehta,21CS05,1.0,60.0,60.0,100.0%,PRESENT
+STU-006,Neha Gupta,21CS06,1.0,60.0,60.0,100.0%,PRESENT
+STU-007,Vikram Singh,21CS07,1.0,60.0,60.0,100.0%,PRESENT
+STU-008,Tanvi Rao,21CS08,10.0,14.0,5.0,8.3%,ABSENT (Walk-By / Below Min Time)

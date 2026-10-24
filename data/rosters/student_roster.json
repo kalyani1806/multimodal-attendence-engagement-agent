@@ -1,0 +1,58 @@
+{
+  "class_info": {
+    "course_name": "CS-402: Intelligent Systems & Machine Learning",
+    "section": "Sec-A",
+    "instructor": "Dr. A. Sharma",
+    "total_enrolled": 8
+  },
+  "students": [
+    {
+      "id": "STU-001",
+      "name": "Aarav Sharma",
+      "roll_no": "21CS01",
+      "email": "aarav.sharma@example.edu"
+    },
+    {
+      "id": "STU-002",
+      "name": "Priya Patel",
+      "roll_no": "21CS02",
+      "email": "priya.patel@example.edu"
+    },
+    {
+      "id": "STU-003",
+      "name": "Rohan Verma",
+      "roll_no": "21CS03",
+      "email": "rohan.verma@example.edu"
+    },
+    {
+      "id": "STU-004",
+      "name": "Ananya Iyer",
+      "roll_no": "21CS04",
+      "email": "ananya.iyer@example.edu"
+    },
+    {
+      "id": "STU-005",
+      "name": "Kabir Mehta",
+      "roll_no": "21CS05",
+      "email": "kabir.mehta@example.edu"
+    },
+    {
+      "id": "STU-006",
+      "name": "Neha Gupta",
+      "roll_no": "21CS06",
+      "email": "neha.gupta@example.edu"
+    },
+    {
+      "id": "STU-007",
+      "name": "Vikram Singh",
+      "roll_no": "21CS07",
+      "email": "vikram.singh@example.edu"
+    },
+    {
+      "id": "STU-008",
+      "name": "Tanvi Rao",
+      "roll_no": "21CS08",
+      "email": "tanvi.rao@example.edu"
+    }
+  ]
+}
