@@ -23,8 +23,8 @@ from src.analytics import AttendanceTracker, SessionMetricsManager, ClassroomRep
 
 def run_headless_demonstration():
     print("=" * 70)
-    print("🎓 MULTIMODAL ATTENDANCE & ENGAGEMENT AGENT")
-    print("   AI-Powered Privacy-Preserving Classroom Intelligence System")
+    print("MULTIMODAL ATTENDANCE & ENGAGEMENT AGENT")
+    print("AI-Powered Privacy-Preserving Classroom Intelligence System")
     print("=" * 70)
 
     # EPIC 1: Setup verification
@@ -195,7 +195,7 @@ def run_headless_demonstration():
     print(f" - CSV Attendance Sheet: {csv_file}")
     print(f" - Markdown Report: {md_file}")
     print("=" * 70)
-    print("✅ All 6 EPICS and 3 Scenarios Verified Successfully!")
+    print("All 6 EPICS and 3 Scenarios Verified Successfully.")
     print("=" * 70)
 
 if __name__ == "__main__":

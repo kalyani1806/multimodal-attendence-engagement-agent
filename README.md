@@ -1,16 +1,16 @@
-# 🎓 Multimodal Attendance & Engagement Agent
+# Multimodal Attendance & Engagement Agent
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-red.svg)](https://opencv.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B.svg)](https://streamlit.io/)
 [![Architecture](https://img.shields.io/badge/Architecture-100%25%20Offline%20Privacy--Preserving-green.svg)]()
 
-> **An AI-powered, privacy-preserving classroom intelligence system integrating Computer Vision, Audio Signal Processing, and Agent-Based Reasoning.**  
+> An AI-powered, privacy-preserving classroom intelligence system integrating Computer Vision, Audio Signal Processing, and Agent-Based Reasoning.  
 > Designed to operate entirely offline to track attendance based on sustained presence, analyze multidimensional engagement trends, and generate AI-driven pedagogical suggestions for educators.
 
 ---
 
-## 📌 Table of Contents
+## Table of Contents
 - [Project Overview](#project-overview)
 - [Core Scenarios Implemented](#core-scenarios-implemented)
   - [Scenario 1: Automated Attendance Tracking](#scenario-1-automated-attendance-tracking)
@@ -28,7 +28,7 @@
 
 ---
 
-## 📖 Project Overview
+## Project Overview
 In educational institutions and professional training environments, attendance tracking remains largely manual or limited to basic biometric systems that fail to capture meaningful engagement and participation context. These traditional approaches are time-consuming, prone to inaccuracies, and provide no insight into learner attention, interaction patterns, or session effectiveness.
 
 As classrooms increasingly adopt digital tools, there is a growing need for intelligent systems that can move beyond simple presence detection. The **Multimodal Attendance & Engagement Agent** integrates:
@@ -38,7 +38,7 @@ As classrooms increasingly adopt digital tools, there is a growing need for inte
 
 ---
 
-## 🎯 Core Scenarios Implemented
+## Core Scenarios Implemented
 
 ### Scenario 1: Automated Attendance Tracking
 - **Sustained Presence Verification:** Rejects momentary walk-bys, transient glitches, or passers-by by tracking cumulative presence against a configurable temporal threshold (e.g., minimum 12 seconds sustained presence or $>55\%$ of total session duration).
@@ -62,7 +62,7 @@ As classrooms increasingly adopt digital tools, there is a growing need for inte
 
 ---
 
-## 🏆 Project EPICS Mapping
+## Project EPICS Mapping
 
 | Epic | Title | Implementation Status & Key Files |
 | :--- | :--- | :--- |
@@ -75,14 +75,14 @@ As classrooms increasingly adopt digital tools, there is a growing need for inte
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
     subgraph Inputs ["Input Stream Sources"]
-        Cam["📹 Live Webcam Feed"]
-        Vid["📂 Recorded Video (.mp4)"]
-        Sim["🚀 Interactive Simulation"]
+        Cam["Live Webcam Feed"]
+        Vid["Recorded Video (.mp4)"]
+        Sim["Interactive Simulation"]
     end
 
     subgraph Vision ["EPIC 2: Computer Vision Module"]
@@ -132,7 +132,7 @@ flowchart TD
 
 ---
 
-## 📁 Project Directory Structure
+## Project Directory Structure
 
 ```
 ├── config/
@@ -173,7 +173,7 @@ flowchart TD
 
 ---
 
-## ⚙️ Quickstart & Installation
+## Quickstart & Installation
 
 ### 1. Prerequisites
 - Python 3.10 to 3.13
@@ -186,7 +186,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Usage Guide
+## Usage Guide
 
 ### 1. Running the Streamlit Web Dashboard
 Launch the dashboard:
@@ -194,7 +194,7 @@ Launch the dashboard:
 streamlit run app.py
 ```
 Open your browser to `http://localhost:8501`.
-- **Mode 1 (1-Click Evaluation):** Select **"Interactive Classroom Simulation"** in the sidebar and click **"Run Session Simulation"**. View real-time timeline, metrics, attendance ledger, and AI suggestion cards.
+- **Mode 1 (Full Evaluation):** Select **"Interactive Classroom Simulation"** in the sidebar and click **"Run Session Simulation"**. View real-time timeline, metrics, attendance ledger, and AI suggestion cards.
 - **Mode 2 (Webcam):** Select **"Live Webcam Video Feed"** to activate real-time OpenCV facial tracking, gaze vectors, and engagement overlay on your camera.
 - **Mode 3 (Recorded Video):** Upload a classroom `.mp4` file for offline processing.
 
@@ -214,7 +214,7 @@ All 12 unit tests will execute and confirm `OK`.
 
 ---
 
-## 🛡️ Offline Privacy-Preserving Compliance
+## Offline Privacy-Preserving Compliance
 - **Zero Cloud Leakage:** All computer vision, acoustic processing, and agent reasoning run 100% on edge (local CPU/GPU).
 - **Ethical Facial Analytics:** Raw video frames are processed in-memory and discarded; only anonymous behavioral indicators and sustained presence metrics are logged.
 - **No External API Dependencies:** Does not require third-party cloud LLMs or online biometric databases.

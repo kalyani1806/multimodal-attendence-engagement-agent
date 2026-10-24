@@ -4,7 +4,7 @@ Main Streamlit Application Dashboard
 Supports:
 - Live Webcam Feed (OpenCV Real-time Vision)
 - Recorded Classroom Video Analysis
-- Interactive Classroom Session Simulation (1-Click Evaluation)
+- Interactive Classroom Session Simulation (Full Evaluation)
 """
 
 import streamlit as st
@@ -30,7 +30,6 @@ from src.ui import apply_custom_styles, render_metric_card, render_ai_suggestion
 # Page Configuration
 st.set_page_config(
     page_title="Multimodal Attendance & Engagement Agent",
-    page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -53,7 +52,6 @@ if "initialized" not in st.session_state:
     st.session_state.live_running = False
 
 # Sidebar Controls
-st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=70)
 st.sidebar.title("Classroom Agent Controls")
 st.sidebar.markdown("**Privacy-Preserving Edge Architecture**")
 
@@ -68,29 +66,29 @@ st.sidebar.subheader("Select Input Mode")
 input_mode = st.sidebar.radio(
     "Source",
     [
-        "🚀 Interactive Classroom Simulation (Full Demo)",
-        "📹 Live Webcam Video Feed",
-        "📂 Upload Recorded Classroom Video"
+        "Interactive Classroom Simulation (Full Demo)",
+        "Live Webcam Video Feed",
+        "Upload Recorded Classroom Video"
     ]
 )
 
 # Main Header
-st.markdown('<div class="main-header">🎓 Multimodal Attendance & Engagement Agent</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">Multimodal Attendance & Engagement Agent</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="sub-header">AI-Powered Classroom Intelligence integrating Computer Vision, Audio Signal Processing & Agent-Based Reasoning (100% Offline)</div>',
     unsafe_allow_html=True
 )
 
-# Top Notice Banner matching user's screenshot
-st.info("💡 **Ready for Evaluation:** Meets all requirements for **Scenario 1 (Attendance Tracking)**, **Scenario 2 (Session Dynamics)**, and **Scenario 3 (Teaching Suggestions)** across **EPIC 1 to 6**.")
+# Top Notice Banner matching user requirements
+st.info("**Evaluation Status:** Meets all requirements for **Scenario 1 (Attendance Tracking)**, **Scenario 2 (Session Dynamics)**, and **Scenario 3 (Teaching Suggestions)** across **EPIC 1 to 6**.")
 
 # Tab Navigation
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "🖥️ Monitor & Video Intelligence",
-    "📋 Attendance Tracking (Scenario 1)",
-    "📈 Session Dynamics (Scenario 2)",
-    "💡 AI Teaching Suggestions (Scenario 3)",
-    "📑 Report & Export (EPIC 5 & 6)"
+    "Monitor & Video Intelligence",
+    "Attendance Tracking (Scenario 1)",
+    "Session Dynamics (Scenario 2)",
+    "AI Teaching Suggestions (Scenario 3)",
+    "Report & Export (EPIC 5 & 6)"
 ])
 
 # -------------------------------------------------------------
@@ -106,7 +104,7 @@ if "Simulation" in input_mode:
 
         col_ctrl1, col_ctrl2 = st.columns([1, 4])
         with col_ctrl1:
-            run_sim = st.button("▶️ Run Session Simulation", type="primary", use_container_width=True)
+            run_sim = st.button("Run Session Simulation", type="primary", use_container_width=True)
         with col_ctrl2:
             st.caption("Executes realistic multi-student timeline: sustained attendance tracking + multimodal signal fusion + pedagogical advice.")
 
@@ -136,7 +134,6 @@ if "Simulation" in input_mode:
                 ]
 
                 for t in range(1, 61):
-                    # Progress
                     progress_bar.progress(int((t / 60) * 100))
                     
                     # Scenario timeline:
@@ -185,21 +182,18 @@ if "Simulation" in input_mode:
 
                         # Student behavioral dynamics
                         if 16 <= t <= 28:
-                            # Attention drop
                             gaze = 0.35 if i in [0, 2, 4] else 0.55
                             alertness = 0.40 if i == 2 else 0.70
                             stability = 0.75
                             orientation = "Looking Down / Distracted" if i in [0, 2, 4] else "Forward (Attentive)"
                             is_drowsy = (i == 2 and t >= 22)
                         elif 29 <= t <= 45:
-                            # Peak engagement
                             gaze = 0.95
                             alertness = 0.95
                             stability = 0.90
                             orientation = "Forward (Attentive)"
                             is_drowsy = False
                         elif t > 45:
-                            # Fatigue in 2 students
                             gaze = 0.50 if i in [1, 5] else 0.85
                             alertness = 0.35 if i in [1, 5] else 0.90
                             stability = 0.70
@@ -262,7 +256,7 @@ if "Simulation" in input_mode:
                         suggestion_active=sug_text
                     )
 
-                status_text.success("✅ 60-Second Classroom Session Simulation Completed Successfully!")
+                status_text.success("60-Second Classroom Session Simulation Completed Successfully.")
                 st.session_state.simulation_run = True
 
             # Display Macro Metrics
@@ -279,9 +273,8 @@ if "Simulation" in input_mode:
             with c4:
                 render_metric_card("Interaction Peaks", f"{summary['total_interaction_peaks']}", "High Q&A Intervals", "#10B981")
 
-            # Quick visual preview
             st.divider()
-            st.markdown("### 📊 Session Timeline Snapshot")
+            st.markdown("### Session Timeline Snapshot")
             df_sim = st.session_state.metrics_mgr.get_dataframe()
             fig = px.line(
                 df_sim,
@@ -301,7 +294,7 @@ if "Simulation" in input_mode:
 # -------------------------------------------------------------
 elif "Live Webcam" in input_mode:
     with tab1:
-        st.subheader("📹 Real-time Computer Vision & Multimodal Monitor")
+        st.subheader("Real-time Computer Vision & Multimodal Monitor")
         st.caption("Runs OpenCV face detection, head pose gaze estimation, and eye alertness on your webcam.")
 
         col_cam1, col_cam2 = st.columns([3, 1])
@@ -412,20 +405,20 @@ elif "Live Webcam" in input_mode:
 # -------------------------------------------------------------
 elif "Upload" in input_mode:
     with tab1:
-        st.subheader("📂 Recorded Classroom Video Intelligence")
+        st.subheader("Recorded Classroom Video Intelligence")
         uploaded_video = st.file_uploader("Upload Classroom Video (.mp4, .avi, .mov)", type=["mp4", "avi", "mov"])
         if uploaded_video:
             st.success(f"File uploaded: {uploaded_video.name} ({uploaded_video.size / 1024 / 1024:.1f} MB)")
             st.info("Video ready for offline processing pipeline.")
             if st.button("Process Video Recording"):
                 st.write("Extracting video frames and acoustic tracks...")
-                st.success("Analysis synchronized with timeline analytics!")
+                st.success("Analysis synchronized with timeline analytics.")
 
 # -------------------------------------------------------------
 # TAB 2: Automated Attendance Tracking (Scenario 1)
 # -------------------------------------------------------------
 with tab2:
-    st.subheader("📋 Scenario 1: Automated Attendance Tracking")
+    st.subheader("Scenario 1: Automated Attendance Tracking")
     st.markdown(
         """
         > **Sustained Presence Verification:** Rejects momentary walk-bys or transient face glitches.
@@ -460,7 +453,7 @@ with tab2:
     # CSV Download Button
     csv_data = att_df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Export Official Attendance Sheet (CSV)",
+        label="Export Official Attendance Sheet (CSV)",
         data=csv_data,
         file_name=f"Attendance_Log_{st.session_state.session_id}.csv",
         mime="text/csv"
@@ -470,7 +463,7 @@ with tab2:
 # TAB 3: Session Dynamics Analytics (Scenario 2)
 # -------------------------------------------------------------
 with tab3:
-    st.subheader("📈 Scenario 2: Engagement and Session Dynamics Analysis")
+    st.subheader("Scenario 2: Engagement and Session Dynamics Analysis")
     st.markdown(
         """
         > **Multimodal Signal Fusion:** Continuously blends head pose orientation, movement stability,
@@ -522,20 +515,20 @@ with tab3:
         # Event logs
         col_ev1, col_ev2 = st.columns(2)
         with col_ev1:
-            st.markdown("#### ⚠️ Attention Drop Incidents")
+            st.markdown("#### Attention Drop Incidents")
             drops = st.session_state.metrics_mgr.attention_drop_events
             if drops:
                 for d in drops:
-                    st.error(f"⏱️ **{d['time_sec']:.0f}s**: Engagement dropped to **{d['engagement_score']:.1f}%** ({d['reason']})")
+                    st.error(f"[{d['time_sec']:.0f}s]: Engagement dropped to {d['engagement_score']:.1f}% ({d['reason']})")
             else:
                 st.success("No critical attention drops detected.")
 
         with col_ev2:
-            st.markdown("#### 🚀 Interaction Peak Incidents")
+            st.markdown("#### Interaction Peak Incidents")
             peaks = st.session_state.metrics_mgr.interaction_peak_events
             if peaks:
                 for p in peaks:
-                    st.success(f"⏱️ **{p['time_sec']:.0f}s**: Engagement surged to **{p['engagement_score']:.1f}%** ({p['reason']})")
+                    st.success(f"[{p['time_sec']:.0f}s]: Engagement surged to {p['engagement_score']:.1f}% ({p['reason']})")
             else:
                 st.info("No major interaction peaks recorded.")
     else:
@@ -545,7 +538,7 @@ with tab3:
 # TAB 4: AI Teaching Suggestions (Scenario 3)
 # -------------------------------------------------------------
 with tab4:
-    st.subheader("💡 Scenario 3: AI-Driven Teaching Suggestions")
+    st.subheader("Scenario 3: AI-Driven Teaching Suggestions")
     st.markdown(
         """
         > **Assistive Pedagogical Decision Support:** Analyzes detected engagement patterns and provides
@@ -564,7 +557,7 @@ with tab4:
         st.info("The AI Agent is continuously observing classroom dynamics. Suggestions will appear dynamically when attention drops, silence intervals, or fatigue clusters are detected.")
 
     st.divider()
-    st.markdown("### 🎯 Pedagogical Decision Tree Rules")
+    st.markdown("### Pedagogical Decision Tree Rules")
     with st.expander("View AI Agent Cognitive Rules"):
         st.markdown(
             """
@@ -579,7 +572,7 @@ with tab4:
 # TAB 5: Report & Export (EPIC 5 & 6)
 # -------------------------------------------------------------
 with tab5:
-    st.subheader("📑 EPIC 5 & 6: Executive Reporting & Export")
+    st.subheader("EPIC 5 & 6: Executive Reporting & Export")
     st.markdown("Export session intelligence records for institutional compliance, student feedback, and mentor evaluation.")
 
     reporter = ClassroomReporter(export_dir=str(LOGS_DIR))
@@ -605,7 +598,7 @@ with tab5:
             md_content = f.read()
 
         st.download_button(
-            label="📄 Download Full Markdown Report (.md)",
+            label="Download Full Markdown Report (.md)",
             data=md_content,
             file_name=f"Classroom_Report_{st.session_state.session_id}.md",
             mime="text/markdown"
