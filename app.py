@@ -9,7 +9,6 @@ Supports:
 
 import streamlit as st
 import numpy as np
-import cv2
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -17,11 +16,23 @@ import time
 from pathlib import Path
 import json
 
+try:
+    import cv2
+    from src.vision import VisionDetector, HeadPoseEstimator, DrowsinessDetector, MovementAnalyzer
+    VISION_AVAILABLE = True
+except Exception as e:
+    cv2 = None
+    VisionDetector = None
+    HeadPoseEstimator = None
+    DrowsinessDetector = None
+    MovementAnalyzer = None
+    VISION_AVAILABLE = False
+    vision_error_msg = str(e)
+
 from config.settings import (
     BASE_DIR, DATA_DIR, LOGS_DIR, ROSTERS_DIR,
     VISION_CONFIG, AUDIO_CONFIG, FUSION_WEIGHTS, AGENT_CONFIG
 )
-from src.vision import VisionDetector, HeadPoseEstimator, DrowsinessDetector, MovementAnalyzer
 from src.audio import AudioProcessor
 from src.agent import MultimodalFusionEngine, TeachingSuggestionAgent
 from src.analytics import AttendanceTracker, SessionMetricsManager, ClassroomReporter
@@ -310,95 +321,99 @@ elif "Live Webcam" in input_mode:
             frame_window = st.image([])
 
             if run_cam:
-                cap = cv2.VideoCapture(0)
-                detector = VisionDetector()
-                pose_estimator = HeadPoseEstimator()
-                drowsiness_detector = DrowsinessDetector()
-                movement_analyzer = MovementAnalyzer()
-                audio_proc = AudioProcessor()
+                if not VISION_AVAILABLE:
+                    st.error("OpenCV video engine is not available on this cloud instance. Please run locally (`streamlit run app.py`) to access your local camera.")
+                    run_cam = False
+                else:
+                    cap = cv2.VideoCapture(0)
+                    detector = VisionDetector()
+                    pose_estimator = HeadPoseEstimator()
+                    drowsiness_detector = DrowsinessDetector()
+                    movement_analyzer = MovementAnalyzer()
+                    audio_proc = AudioProcessor()
 
-                start_time = time.time()
+                    start_time = time.time()
 
-                while run_cam:
-                    ret, frame = cap.read()
-                    if not ret:
-                        st.warning("Unable to access webcam. Check device permissions.")
-                        break
+                    while run_cam:
+                        ret, frame = cap.read()
+                        if not ret:
+                            st.warning("Unable to access webcam. Check device permissions.")
+                            break
 
-                    curr_time = time.time()
-                    elapsed_sec = curr_time - start_time
-                    h, w, _ = frame.shape
+                        curr_time = time.time()
+                        elapsed_sec = curr_time - start_time
+                        h, w, _ = frame.shape
 
-                    # Detect faces and tracks
-                    participants = detector.process_frame(frame, elapsed_sec)
-                    student_engs = []
-                    active_for_att = []
+                        # Detect faces and tracks
+                        participants = detector.process_frame(frame, elapsed_sec)
+                        student_engs = []
+                        active_for_att = []
 
-                    for p in participants:
-                        x, y, bw, bh = p["bbox"]
-                        crop = frame[max(0, y):min(h, y+bh), max(0, x):min(w, x+bw)]
+                        for p in participants:
+                            x, y, bw, bh = p["bbox"]
+                            crop = frame[max(0, y):min(h, y+bh), max(0, x):min(w, x+bw)]
 
-                        # Vision Features
-                        pose_res = pose_estimator.estimate_pose_from_crop(crop, p["bbox"], (h, w))
-                        drow_res = drowsiness_detector.analyze(crop, p["id"])
-                        mov_res = movement_analyzer.analyze_movement(crop, p["id"], elapsed_sec)
+                            # Vision Features
+                            pose_res = pose_estimator.estimate_pose_from_crop(crop, p["bbox"], (h, w))
+                            drow_res = drowsiness_detector.analyze(crop, p["id"])
+                            mov_res = movement_analyzer.analyze_movement(crop, p["id"], elapsed_sec)
 
-                        # Audio Feature (simulated baseline or mic)
-                        audio_res = audio_proc.process_time_slice(None, session_time_sec=elapsed_sec)
+                            # Audio Feature (simulated baseline or mic)
+                            audio_res = audio_proc.process_time_slice(None, session_time_sec=elapsed_sec)
 
-                        # Fuse Multimodal Signals
-                        eng_res = st.session_state.fusion.compute_student_engagement(
-                            gaze_score=pose_res["gaze_score"],
-                            alertness_score=drow_res["alertness_score"],
-                            stability_score=mov_res["stability_score"],
-                            audio_score=audio_res["participation_score"]
+                            # Fuse Multimodal Signals
+                            eng_res = st.session_state.fusion.compute_student_engagement(
+                                gaze_score=pose_res["gaze_score"],
+                                alertness_score=drow_res["alertness_score"],
+                                stability_score=mov_res["stability_score"],
+                                audio_score=audio_res["participation_score"]
+                            )
+                            student_engs.append(eng_res)
+
+                            # Overlay Bounding Box and Annotations
+                            color = (0, 255, 0) if eng_res["engagement_score"] >= 60 else (0, 165, 255)
+                            if eng_res["engagement_score"] < 45:
+                                color = (0, 0, 255)
+
+                            cv2.rectangle(frame, (x, y), (x + bw, y + bh), color, 2)
+                            
+                            label_top = f"ID:{p['id']} | Eng: {eng_res['engagement_score']:.0f}%"
+                            label_sub = f"{pose_res['orientation']} | {drow_res['status']}"
+                            
+                            cv2.putText(frame, label_top, (x, max(20, y - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
+                            cv2.putText(frame, label_sub, (x, min(h - 10, y + bh + 18)), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1)
+
+                            active_for_att.append({
+                                "id": p["id"],
+                                "name": p["name"],
+                                "sustained": p["sustained"]
+                            })
+
+                        # Update attendance
+                        st.session_state.attendance_tracker.update_presence(active_for_att, elapsed_sec, dt=0.2)
+
+                        # Compute classroom average
+                        class_eng = st.session_state.fusion.compute_classroom_engagement(
+                            student_engs,
+                            {"is_speech": True, "audio_state": "Live Audio"}
                         )
-                        student_engs.append(eng_res)
 
-                        # Overlay Bounding Box and Annotations
-                        color = (0, 255, 0) if eng_res["engagement_score"] >= 60 else (0, 165, 255)
-                        if eng_res["engagement_score"] < 45:
-                            color = (0, 0, 255)
+                        # Update telemetry
+                        score_val = class_eng["class_engagement_score"]
+                        telemetry_gauge.metric("Current Engagement", f"{score_val:.1f}%")
+                        telemetry_status.info(f"Classroom Mood: {class_eng['overall_mood']}")
+                        if participants:
+                            telemetry_gaze.write(f"Active Participants: **{len(participants)}**")
+                        else:
+                            telemetry_gaze.write("No face in frame (Looking away)")
 
-                        cv2.rectangle(frame, (x, y), (x + bw, y + bh), color, 2)
-                        
-                        label_top = f"ID:{p['id']} | Eng: {eng_res['engagement_score']:.0f}%"
-                        label_sub = f"{pose_res['orientation']} | {drow_res['status']}"
-                        
-                        cv2.putText(frame, label_top, (x, max(20, y - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
-                        cv2.putText(frame, label_sub, (x, min(h - 10, y + bh + 18)), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1)
+                        # Convert to RGB for Streamlit
+                        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        frame_window.image(frame_rgb, use_container_width=True)
 
-                        active_for_att.append({
-                            "id": p["id"],
-                            "name": p["name"],
-                            "sustained": p["sustained"]
-                        })
+                        time.sleep(0.05)
 
-                    # Update attendance
-                    st.session_state.attendance_tracker.update_presence(active_for_att, elapsed_sec, dt=0.2)
-
-                    # Compute classroom average
-                    class_eng = st.session_state.fusion.compute_classroom_engagement(
-                        student_engs,
-                        {"is_speech": True, "audio_state": "Live Audio"}
-                    )
-
-                    # Update telemetry
-                    score_val = class_eng["class_engagement_score"]
-                    telemetry_gauge.metric("Current Engagement", f"{score_val:.1f}%")
-                    telemetry_status.info(f"Classroom Mood: {class_eng['overall_mood']}")
-                    if participants:
-                        telemetry_gaze.write(f"Active Participants: **{len(participants)}**")
-                    else:
-                        telemetry_gaze.write("No face in frame (Looking away)")
-
-                    # Convert to RGB for Streamlit
-                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    frame_window.image(frame_rgb, use_container_width=True)
-
-                    time.sleep(0.05)
-
-                cap.release()
+                    cap.release()
 
 # -------------------------------------------------------------
 # MODE 3: Upload Recorded Video
